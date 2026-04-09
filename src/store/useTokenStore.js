@@ -60,9 +60,10 @@ export const useTokenStore = create((set, get) => ({
     }
   },
 
- updateToken: async (path, value) => {
-  const { computedTokens, lockedTokens, siteId } = get();
+updateToken: async (path, value) => {
+  const { computedTokens, siteId } = get();
 
+  const before = JSON.parse(JSON.stringify(computedTokens));
   const newTokens = JSON.parse(JSON.stringify(computedTokens));
 
   const keys = path.split(".");
@@ -75,22 +76,13 @@ export const useTokenStore = create((set, get) => ({
 
   applyTokensToDom(newTokens);
 
-  const newLocked = JSON.parse(JSON.stringify(lockedTokens));
-  let lockObj = newLocked;
-
-  keys.slice(0, -1).forEach((k) => {
-    if (!lockObj[k]) lockObj[k] = {};
-    lockObj = lockObj[k];
-  });
-
-  lockObj[keys[keys.length - 1]] = value;
-
   await axios.post(
-    `https://stylesync-backend-huuo.onrender.com/api/tokens/${siteId}/lock`,
-    { lockedTokens: newLocked }
+    `https://stylesync-backend-huuo.onrender.com/api/history/${siteId}`,
+    {
+      before,
+      after: newTokens
+    }
   );
-
-  set({ lockedTokens: newLocked });
 },
 
  lockToken: async (path, value) => {
