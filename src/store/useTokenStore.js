@@ -97,7 +97,7 @@ export const useTokenStore = create((set, get) => ({
     }
 
     await axios.post(
-      `http://localhost:5000/api/tokens/${siteId}/lock`,
+      `https://stylesync-backend-huuo.onrender.com/api/tokens/${siteId}/lock`,
       { lockedTokens: newLocked }
     );
 
@@ -115,7 +115,7 @@ export const useTokenStore = create((set, get) => ({
     const { siteId } = get();
 
     const res = await axios.get(
-      `http://localhost:5000/api/history/${siteId}`
+      `https://stylesync-backend-huuo.onrender.com/api/history/${siteId}`
     );
 
     set({
