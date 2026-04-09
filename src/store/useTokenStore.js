@@ -76,41 +76,38 @@ export const useTokenStore = create((set, get) => ({
     applyTokensToDom(newTokens);
   },
 
-  lockToken: async (path, value) => {
-    const { lockedTokens, siteId, extractedTokens } = get();
+ lockToken: async (path, value) => {
+  const { lockedTokens, siteId, computedTokens } = get();
 
-    const newLocked = JSON.parse(JSON.stringify(lockedTokens));
-    const keys = path.split(".");
-    let obj = newLocked;
+  const newLocked = JSON.parse(JSON.stringify(lockedTokens));
+  const keys = path.split(".");
+  let obj = newLocked;
 
-    keys.slice(0, -1).forEach((k) => {
-      if (!obj[k]) obj[k] = {};
-      obj = obj[k];
-    });
+  keys.slice(0, -1).forEach((k) => {
+    if (!obj[k]) obj[k] = {};
+    obj = obj[k];
+  });
 
-    const lastKey = keys[keys.length - 1];
+  const lastKey = keys[keys.length - 1];
 
-    if (obj[lastKey]) {
-      delete obj[lastKey]; // unlock
-    } else {
-      obj[lastKey] = value; // lock
-    }
+  if (obj[lastKey]) {
+    delete obj[lastKey];
+  } else {
+    obj[lastKey] = value;
+  }
 
-    await axios.post(
-      `https://stylesync-backend-huuo.onrender.com/api/tokens/${siteId}/lock`,
-      { lockedTokens: newLocked }
-    );
+  await axios.post(
+    `https://stylesync-backend-huuo.onrender.com/api/tokens/${siteId}/lock`,
+    { lockedTokens: newLocked }
+  );
 
-    const merged = deepMerge(extractedTokens, newLocked);
+  set({
+    lockedTokens: newLocked,
+    computedTokens: computedTokens,
+  });
 
-    set({
-      lockedTokens: newLocked,
-      computedTokens: merged,
-    });
-
-    applyTokensToDom(merged);
-  },
-
+  applyTokensToDom(computedTokens);
+},
   fetchHistory: async () => {
     const { siteId } = get();
 
