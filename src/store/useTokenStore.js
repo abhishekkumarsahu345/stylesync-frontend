@@ -29,7 +29,7 @@ export const useTokenStore = create((set, get) => ({
       set({ status: "loading", errorMessage: "" });
 
       const response = await axios.post(
-        "http://localhost:5000/api/scrape",
+        "https://stylesync-backend-huuo.onrender.com/api/scrape",
         { url },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -37,7 +37,7 @@ export const useTokenStore = create((set, get) => ({
       const siteId = response.data.siteId;
 
       const tokensRes = await axios.get(
-        `http://localhost:5000/api/tokens/${siteId}`
+        `https://stylesync-backend-huuo.onrender.com/api/tokens/${siteId}`
       );
 
       const { extracted, locked, computed } = tokensRes.data;
@@ -140,7 +140,7 @@ export const useTokenStore = create((set, get) => ({
     const { siteId } = get();
 
     const res = await axios.get(
-      `http://localhost:5000/api/export/${siteId}/css`
+      `https://stylesync-backend-huuo.onrender.com/api/export/${siteId}/css`
     );
 
     const blob = new Blob([res.data], { type: "text/css" });
